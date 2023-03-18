@@ -44,7 +44,10 @@ What we want with this test:
 - (Bonus) Improve controller code
 
 ------------------------------------------------------------------------
+------------------------------------------------------------------------
 ## Solution
+------------------------------------------------------------------------
+------------------------------------------------------------------------
 - To improve the build speed of my Dockerfile, I decided to minimize it. After doing so, I built the image and pushed it to my Docker registry.
 
 - I then customized the controller deployment to use the image that I had just built. Once the deployment was customized, I deployed the foo-pod.
