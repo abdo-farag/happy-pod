@@ -6,7 +6,7 @@ metadata:
     foo: "I am happy"
     egress-ports-tcp: "6443"
   labels:
-    run: foo
+    run: bar
   name: bar
   namespace: default
 spec:

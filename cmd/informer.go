@@ -103,7 +103,7 @@ func protect(clientset kubernetes.Interface, pod *corev1.Pod) error {
 		Spec: networkingv1.NetworkPolicySpec{
 			PodSelector: metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"run": "foo",
+					"run": pod.Labels["run"],
 				},
 			},
 			PolicyTypes: []networkingv1.PolicyType{
