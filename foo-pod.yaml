@@ -2,11 +2,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  annotations:
+    foo: "I am happy"
   labels:
     run: foo
   name: foo
   namespace: default
 spec:
+  terminationGracePeriodSeconds: 0
   containers:
   - name: foo
     image: nginx

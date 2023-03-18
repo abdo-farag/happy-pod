@@ -82,7 +82,7 @@ spec:
     spec:
       serviceAccountName: controller
       containers:
-      - image: renanqts/happy-controller # code inside the cmd folder
+      - image: abdofarag/happy-controller #renanqts/happy-controller # code inside the cmd folder
         imagePullPolicy: Always
         name: controller
         volumeMounts:
