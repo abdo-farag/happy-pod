@@ -1,0 +1,138 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: controller-cert
+  namespace: default
+  labels:
+    app: controller
+spec:
+  dnsNames:
+  - webhook.default.svc
+  - webhook.default.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: selfsigned-issuer
+  secretName: webhook-controller-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+  namespace: default
+  labels:
+    app: controller
+spec:
+  selfSigned: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: controller
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: controller
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+  - watch
+- apiGroups: 
+    - "networking.k8s.io"
+  resources:
+    - "networkpolicies"
+  verbs:
+    - "create"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: network-policy-editor-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: controller
+subjects:
+- kind: ServiceAccount
+  name: controller
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: controller
+  name: controller
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: controller
+  template:
+    metadata:
+      labels:
+        app: controller
+    spec:
+      serviceAccountName: controller
+      containers:
+      - image: renanqts/happy-controller # code inside the cmd folder
+        imagePullPolicy: Always
+        name: controller
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        ports:
+        - containerPort: 9443
+          name: webhook
+          protocol: TCP
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-controller-cert
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: controller
+  name: webhook
+  namespace: default
+spec:
+  ports:
+  - name: https
+    port: 443
+    targetPort: webhook
+  selector:
+    app: controller
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: default/controller-cert
+  name: happy-pod
+webhooks:
+- name: happy-pod.emnify.com
+  admissionReviewVersions:
+  - v1beta1
+  clientConfig:
+    service:
+      name: webhook
+      namespace: default
+      path: /happy-pod
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  sideEffects: None
+  failurePolicy: Ignore

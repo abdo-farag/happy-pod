@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: foo
+  name: foo
+  namespace: default
+spec:
+  containers:
+  - name: foo
+    image: nginx
+    command: ["bash", "-c"]
+    args: 
+      - |
+        # DO NOT CHANGE ANYTHING HERE
+        sleep 10
+        while true
+          do
+            echo -n I am
+            # wait for it...
+            if ! curl --fail --silent --show-error http://example.com >/dev/null; then
+              exit 1
+            fi
+            echo " happy"
+            sleep 1
+        done
