@@ -100,3 +100,11 @@ Additionally, I added suppport for different egress ports by adding an array of 
 Then, I added support for creating network policies for both TCP and UDP protocolls. This was done by adding a conditional statement that checks the protocol specified in the annotation against the desired protocol, and only creating a network policy if the protocol matches.
 
 These changes have made the controller more felexible and useful for creating network policies for a wider range of pods with varying requiremments.
+
+#### Another enhancement that could be made
+-----------------------------------------------------------------------------------
+Useing a ConfigMap to define the ports for labels instead of annotations. This would invovlve creating a ConfigMap that stores the labels as keys and their corresponding ready ports as values.
+
+With this approach, the protect function can be modified to read the ConfigMap, retrieve the ready ports for a label, and dynamically create the egress rules accordingly. This way, it would be possible to change the ready ports for a label without modifying the code or annotatoins.
+
+Using a ConfigMap in this way provides a more efficient strategy for managing network policies across multiple pods with different labels, as it enables the required ports ports to be centrally managed and easily updated without the need to modify individual annotations or code. If time permits, implementing this improvement would be a worthwhile investment.
