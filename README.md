@@ -70,12 +70,12 @@ metadata:
 ```
 //...
 Ports: []networkingv1.NetworkPolicyPort{
-            ...
-						{
-							Port:     &[]intstr.IntOrString{intstr.FromInt(53)}[0],
-							Protocol: &[]v1.Protocol{v1.ProtocolUDP}[0],
-						},
-					},
+	...
+	{
+		Port:     &[]intstr.IntOrString{intstr.FromInt(53)}[0],
+		Protocol: &[]v1.Protocol{v1.ProtocolUDP}[0],
+	},
+},
 //...
 ```
 #### Problem solved
