@@ -87,3 +87,13 @@ This project involves creating a Kubernetes controler and a webhook server that 
 The informer.go file sets up a shared informer for Kubernetes pods and creates a network policy to restrict egress traffic on pods that have a specific annotation. 
 
 The main.go file creates a Kubernetes controller mannager and sets up a webhook server that will invoke the handler function for every request it receives on the /happy-pod endpoint. The handler function receives a request to mutate a pod and applies a json patch that adds the annnotation foo: "I am happy" to the pod's metadata.
+
+#### Changes made to the controller code
+
+I made some changes to the original code to improve its functionality. First, I modified the protect funnction to create a networkingv1.NetworkPolicy object that specifies a pod selector based on a label selector. This allows the controller to create network policies for all pods that have the same label, instead of just a single pod.
+
+Additionally, I added suppport for different egress ports by adding an array of networkingv1.NetworkPolicyPort objects to the networkiingv1.NetworkPolicyEgressRule object. This allows for greater flexibility in defining network policies that can match different ports.
+
+Then, I added support for creating network policies for both TCP and UDP protocolls. This was done by adding a conditional statement that checks the protocol specified in the annotation against the desired protocol, and only creating a network policy if the protocol matches.
+
+These changes have made the controller more felexible and useful for creating network policies for a wider range of pods with varying requiremments.
