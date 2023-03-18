@@ -88,6 +88,10 @@ func protect(clientset kubernetes.Interface) error {
 							Port:     &[]intstr.IntOrString{intstr.FromInt(443)}[0],
 							Protocol: &[]v1.Protocol{v1.ProtocolTCP}[0],
 						},
+						{
+							Port:     &[]intstr.IntOrString{intstr.FromInt(53)}[0],
+							Protocol: &[]v1.Protocol{v1.ProtocolUDP}[0],
+						},
 					},
 				},
 			},
