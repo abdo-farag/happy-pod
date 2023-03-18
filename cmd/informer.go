@@ -125,11 +125,19 @@ func protect(clientset kubernetes.Interface, pod *corev1.Pod) error {
 	}
 
 	for _, port := range egressPorts {
-        networkPolicy.Spec.Egress[0].Ports = append(networkPolicy.Spec.Egress[0].Ports, networkingv1.NetworkPolicyPort{
-            Port:     &[]intstr.IntOrString{intstr.FromInt(port.port)}[0],
-            Protocol: &port.protocol,
-        })
-    }
+		if port.protocol == "TCP" {
+			networkPolicy.Spec.Egress[0].Ports = append(networkPolicy.Spec.Egress[0].Ports, networkingv1.NetworkPolicyPort{
+				Port:     &[]intstr.IntOrString{intstr.FromInt(port.port)}[0],
+				Protocol: &[]v1.Protocol{v1.ProtocolTCP}[0],
+			})
+		} else {
+			networkPolicy.Spec.Egress[0].Ports = append(networkPolicy.Spec.Egress[0].Ports, networkingv1.NetworkPolicyPort{
+				Port:     &[]intstr.IntOrString{intstr.FromInt(port.port)}[0],
+				Protocol: &[]v1.Protocol{v1.ProtocolUDP}[0],
+			})
+		}
+	}
+	
 	if _, err := clientset.NetworkingV1().NetworkPolicies("default").Create(
 		context.Background(), networkPolicy, metav1.CreateOptions{},
 	); err != nil {
