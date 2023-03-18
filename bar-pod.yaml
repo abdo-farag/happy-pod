@@ -4,16 +4,15 @@ kind: Pod
 metadata:
   annotations:
     foo: "I am happy"
-    egress-ports-tcp: "80,443"
-    egress-ports-udp: "53"
+    egress-ports-tcp: "6443"
   labels:
     run: foo
-  name: foo
+  name: bar
   namespace: default
 spec:
   terminationGracePeriodSeconds: 0
   containers:
-  - name: foo
+  - name: bar
     image: nginx
     command: ["bash", "-c"]
     args: 
@@ -24,7 +23,7 @@ spec:
           do
             echo -n I am
             # wait for it...
-            if ! curl --fail --silent --show-error http://example.com >/dev/null; then
+            if ! curl --fail --silent --show-error -k https://10.0.4.100:6443/version >/dev/null; then
               exit 1
             fi
             echo " happy"
